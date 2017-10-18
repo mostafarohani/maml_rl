@@ -112,6 +112,7 @@ class MAMLNPO(BatchMAMLPolopt):
         obs_vars, action_vars, adv_vars = self.make_vars('test')
         surr_objs = []
         for i in range(self.meta_batch_size):
+            print(i)
             dist_info_vars, _ = self.policy.updated_dist_info_sym(i, all_surr_objs[-1][i], obs_vars[i], params_dict=new_params[i])
 
             if self.kl_constrain_step == -1:  # if we only care about the kl of the last step, the last item in kls will be the overall
@@ -126,7 +127,7 @@ class MAMLNPO(BatchMAMLPolopt):
         else:
             surr_obj = tf.reduce_mean(tf.stack(all_surr_objs[0], 0)) # if not meta, just use the first surr_obj
             input_list = init_input_list
-
+        
         if self.use_maml:
             mean_kl = tf.reduce_mean(tf.concat(kls, 0))  ##CF shouldn't this have the option of self.kl_constrain_step == -1?
             max_kl = tf.reduce_max(tf.concat(kls, 0))
