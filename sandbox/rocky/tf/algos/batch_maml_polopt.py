@@ -98,7 +98,7 @@ class BatchMAMLPolopt(RLAlgorithm):
         self.fixed_horizon = fixed_horizon
         self.meta_batch_size = meta_batch_size # number of tasks
         self.num_grad_updates = num_grad_updates # number of gradient steps during training
-
+        import pdb; pdb.set_trace()
         if sampler_cls is None:
             if singleton_pool.n_parallel > 1:
                 sampler_cls = BatchSampler

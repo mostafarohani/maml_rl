@@ -72,7 +72,7 @@ class VG(VariantGenerator):
     
     @variant
     def gpu_frac(self):
-        return [0.5]
+        return [1.0]
 
   #  @variant
   #  def task_var(self):  # fwd/bwd task or goal vel task
