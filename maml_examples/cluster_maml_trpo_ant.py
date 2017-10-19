@@ -32,7 +32,7 @@ class VG(VariantGenerator):
 
     @variant
     def meta_batch_size(self):
-        return [40] # at least a total batch size of 400. (meta batch size*fast batch size)
+        return [4] # at least a total batch size of 400. (meta batch size*fast batch size)
 
     @variant
     def seed(self):
@@ -88,11 +88,12 @@ for v in variants:
     )
 
     run_experiment_lite(
-        algo.train(),
+        algo.train(frac=0.12, devices='0'),
         exp_prefix='posticml_trpo_maml_ant' + task_var + '_' + str(max_path_length),
         exp_name='maml'+str(int(use_maml))+'_fbs'+str(v['fast_batch_size'])+'_mbs'+str(v['meta_batch_size'])+'_flr_' + str(v['fast_lr'])  + '_mlr' + str(v['meta_step_size']),
         # Number of parallel workers for sampling
         n_parallel=8,
+        #env={'CUDA_VISIBLE_DEVICES' : '0'},
         # Only keep the snapshot parameters for the last iteration
         snapshot_mode="gap",
         snapshot_gap=25,

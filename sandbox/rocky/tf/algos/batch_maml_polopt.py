@@ -15,6 +15,7 @@ from sandbox.rocky.tf.samplers.batch_sampler import BatchSampler
 from sandbox.rocky.tf.samplers.vectorized_sampler import VectorizedSampler
 from sandbox.rocky.tf.spaces import Discrete
 from rllab.sampler.stateful_pool import singleton_pool
+from rllab import tf_utils as tfu
 
 class BatchMAMLPolopt(RLAlgorithm):
     """
@@ -127,11 +128,14 @@ class BatchMAMLPolopt(RLAlgorithm):
     def process_samples(self, itr, paths, prefix='', log=True):
         return self.sampler.process_samples(itr, paths, prefix=prefix, log=log)
 
-    def train(self):
+    def train(self, frac=None):
         # TODO - make this a util
         flatten_list = lambda l: [item for sublist in l for item in sublist]
 
-        with tf.Session() as sess:
+        if frac == None:
+          frac = 1.0
+
+        with tfu.Session(frac=frac) as sess:
             # Code for loading a previous policy. Somewhat hacky because needs to be in sess.
             if self.load_policy is not None:
                 import joblib

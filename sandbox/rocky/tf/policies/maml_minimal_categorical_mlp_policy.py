@@ -171,7 +171,7 @@ class MAMLCategoricalMLPPolicy(StochasticPolicy, Serializable):
             self.assign_params(self.all_params, init_param_values)
 
         outputs = []
-        inputs = tf.split(0, num_tasks, self._l_obs)
+        inputs = tf.split(self._l_obs, num_tasks, axis=0)
         for i in range(num_tasks):
             # TODO - use a placeholder to feed in the params, so that we don't have to recompile every time.
             task_inp = inputs[i]

@@ -4,7 +4,6 @@ import numpy as np
 from rllab.envs.base import Step
 from rllab.misc.overrides import overrides
 from rllab.misc import logger
-from rllab.envs.mujoco.mujoco_env import MujocoEnv
 from rllab.envs.base import Env
 import numpy as np
 from rllab.envs.base import Step
@@ -41,7 +40,6 @@ class MABEnv(Env, Serializable):
     @overrides
     def reset(self, init_state=None, reset_args=None, **kwargs):
         arm_means = reset_args
-        import pdb; pdb.set_trace()
         if arm_means is not None:
             self.arm_means = arm_means
         elif self.arm_means is None:

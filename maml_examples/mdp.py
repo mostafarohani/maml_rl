@@ -30,30 +30,30 @@ class VG(VariantGenerator):
         return [0.01] # sometimes 0.02 better
 
     @variant
-    def meta_batch_size(self):
-        return [100] # at least a total batch size of 400. (meta batch size*fast batch size)
-
-    @variant
     def seed(self):
         return [1]
 
     @variant
     def n_episodes(self):
-      if FLAGS.variant == 1:
-        return [10] #[10, 26, 50, 76, 100]
-      if FLAGS.variant == 2:
-        return [26] 
-      if FLAGS.variant == 3:
-        return [50] 
-      if FLAGS.variant == 4:
-        return [76] 
-      if FLAGS.variant == 5:
-        return [100] 
+      return [10, 26, 50, 76, 100]
     
     @variant
     def fast_batch_size(self, n_episodes):
         return [n_episodes/2]
     
+    @variant
+    def meta_batch_size(self, n_episodes):
+      if n_episodes == 10:
+        return [50]
+      elif n_episodes == 26:
+        return [25]
+      elif n_episodes == 50:
+        return [12]
+      elif n_episodes == 76:
+        return [5]
+      elif n_episodes == 100:
+        return [1]
+
     @variant
     def n_states(self):
       return [10]
@@ -69,6 +69,10 @@ class VG(VariantGenerator):
     @variant
     def discount(self):
         return [0.99]
+    
+    @variant
+    def gpu_frac(self):
+        return [0.5]
 
   #  @variant
   #  def task_var(self):  # fwd/bwd task or goal vel task
@@ -80,14 +84,14 @@ class VG(VariantGenerator):
 
 parser = argparse.ArgumentParser(description="what device to use")
 parser.add_argument('--devices', type=int, default=0)
-parser.add_argument('--variant', type=int, default=1)
+parser.add_argument('--variant', type=int, default=0)
 
 FLAGS = parser.parse_args()
 
 variants = VG().variants()
 
 
-for v in variants:
+for v in [variants[FLAGS.variant]]:
     max_path_length = v.n_episodes * v.episode_horizon
     num_grad_updates = 1
     use_maml=True
@@ -128,7 +132,7 @@ for v in variants:
     )
 
     run_experiment_lite(
-        algo.train(),
+        algo.train(frac=v.gpu_frac),
         exp_prefix='maml_mdp', 
         exp_name='N%d_mbs%d' % (v['n_episodes'], v['meta_batch_size']),
         # Number of parallel workers for sampling
